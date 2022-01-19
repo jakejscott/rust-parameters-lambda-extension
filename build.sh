@@ -10,6 +10,6 @@ cp target/x86_64-unknown-linux-musl/release/parameters-lambda-extension bin/exte
 chmod +x bin/extensions/parameters-lambda-extension
 
 cd bin
-zip -r extensions .
+zip -r extensions.zip .
 rm extensions -rfv
 cd ..

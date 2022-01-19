@@ -36,6 +36,6 @@ sudo apt-get install zip musl-tools -y
 
 ```sh
 cd cdk
-npx cdk bootstrap
-npx cdk deploy
+cdk bootstrap
+cdk deploy
 ```
