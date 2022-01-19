@@ -10,7 +10,7 @@ https://serverlessland.com/learn/lambda-extensions
 
 # Installing
 
-```
+```sh
 # Install Rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
@@ -28,7 +28,7 @@ sudo apt-get install zip musl-tools -y
 
 # Building
 
-```
+```sh
 ./build.sh
 ```
 
