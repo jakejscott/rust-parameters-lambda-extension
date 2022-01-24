@@ -111,7 +111,7 @@ pub async fn ssm_get_parameters_by_path(
 pub async fn fetch_parameters(
     vars: HashMap<String, String>,
     ssm: &aws_sdk_ssm::Client,
-) -> Vec<Parameter> {
+) -> Result<Vec<Parameter>> {
     let mut results: Vec<Parameter> = Vec::new();
 
     let mut handles: Vec<JoinHandle<Result<Parameter>>> = Vec::new();
@@ -147,7 +147,7 @@ pub async fn fetch_parameters(
         }
     }
 
-    results
+    Ok(results)
 }
 
 #[cfg(test)]
@@ -155,6 +155,7 @@ mod test {
     use super::*;
     use anyhow::Result;
     use aws_sdk_ssm::model::ParameterType;
+    use serde_json::json;
 
     #[tokio::test]
     async fn should_parse() -> Result<()> {
@@ -187,17 +188,21 @@ mod test {
 
         let vars: HashMap<String, String> = HashMap::from([
             (
-                "MY_PARAMETER".to_string(),
+                "FOO_PARAM".to_string(),
                 "ssm_parameter:/my/parameter".to_string(),
             ),
             (
-                "MY_PARAMETERS".to_string(),
+                "FOO_PARAMS".to_string(),
                 "ssm_parameters:/my/path/prefix".to_string(),
             ),
         ]);
 
-        let results = fetch_parameters(vars, &ssm).await;
-        println!("Parameters {:#?}", results);
+        let results = fetch_parameters(vars, &ssm)
+            .await
+            .expect("Should fetch parameters");
+
+        let json = json!(&results);
+        println!("Parameters {}", json);
 
         Ok(())
     }
