@@ -22,22 +22,36 @@ pub async fn ssm_get_parameter(
     name: String,
     args: String,
 ) -> Result<Parameter> {
+    let mut items: Vec<ParameterItem> = Vec::new();
+
     let response = ssm
         .get_parameter()
         .name(args.replace("ssm_parameter:", ""))
         .with_decryption(true)
         .send()
-        .await?;
+        .await;
 
-    let parameter = response.parameter.unwrap();
+    match response {
+        Ok(response) => {
+            if let Some(parameter) = response.parameter {
+                items.push(ParameterItem {
+                    name: parameter.name.expect("name is required"),
+                    value: parameter.value.expect("value is required"),
+                });
+            }
+        }
+        Err(error) => {
+            eprintln!(
+                "[parameters] Error calling ssm:GetParameter. Environment variable: {name} Args: {args} Error: {err}",
+                err = error.to_string()
+            );
+        }
+    }
 
     Ok(Parameter {
         name: name.to_owned(),
         args: args.to_owned(),
-        items: vec![ParameterItem {
-            name: parameter.name.unwrap(),
-            value: parameter.value.unwrap(),
-        }],
+        items: items,
     })
 }
 
@@ -58,22 +72,33 @@ pub async fn ssm_get_parameters_by_path(
             .with_decryption(true)
             .set_next_token(token.clone())
             .send()
-            .await?;
+            .await;
 
-        for parameters in response.parameters {
-            for parameter in parameters {
-                items.push(ParameterItem {
-                    name: parameter.name.unwrap(),
-                    value: parameter.value.unwrap(),
-                });
+        match response {
+            Ok(response) => {
+                for parameters in response.parameters {
+                    for parameter in parameters {
+                        items.push(ParameterItem {
+                            name: parameter.name.expect("name is required"),
+                            value: parameter.value.expect("value is required"),
+                        });
+                    }
+                }
+
+                if response.next_token == None {
+                    break;
+                }
+
+                token = response.next_token;
+            }
+            Err(error) => {
+                eprintln!(
+                    "[parameters] Error calling ssm:GetParametersByPath. Environment variable: {name} Args: {args} Error: {err}",
+                    err = error.to_string()
+                );
+                break;
             }
         }
-
-        if response.next_token == None {
-            break;
-        }
-
-        token = response.next_token;
     }
 
     Ok(Parameter {
@@ -113,9 +138,12 @@ pub async fn fetch_parameters(
                 Ok(parameter) => {
                     results.push(parameter);
                 }
-                Err(_) => todo!(),
+                Err(error) => eprintln!(
+                    "[parameters] Parameter error {err}",
+                    err = error.to_string()
+                ),
             },
-            Err(_) => todo!(),
+            Err(error) => eprintln!("[parameters] JoinError {err}", err = error.to_string()),
         }
     }
 
