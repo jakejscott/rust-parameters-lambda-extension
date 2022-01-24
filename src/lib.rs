@@ -4,14 +4,14 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use tokio::{spawn, task::JoinHandle};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Parameter {
     pub name: String,
     pub args: String,
     pub items: Vec<ParameterItem>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ParameterItem {
     pub name: String,
     pub value: String,
@@ -189,11 +189,11 @@ mod test {
         let vars: HashMap<String, String> = HashMap::from([
             (
                 "FOO_PARAM".to_string(),
-                "ssm_parameter:/my/parameter".to_string(),
+                "ssm_parameter:/my/parameterx".to_string(),
             ),
             (
                 "FOO_PARAMS".to_string(),
-                "ssm_parameters:/my/path/prefix".to_string(),
+                "ssm_parameters:/my/path/prefixx".to_string(),
             ),
         ]);
 
