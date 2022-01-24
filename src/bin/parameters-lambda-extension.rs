@@ -15,6 +15,9 @@ async fn parameters_extension(event: LambdaEvent) -> Result<(), Error> {
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     println!("[parameters] Init");
+
+    // TODO
+
     let func = extension_fn(parameters_extension);
     lambda_extension::run(func).await
 }

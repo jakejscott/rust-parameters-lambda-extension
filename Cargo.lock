@@ -960,6 +960,7 @@ dependencies = [
  "aws-sdk-dynamodb",
  "aws-sdk-ssm",
  "aws-types",
+ "futures",
  "lambda_extension",
  "lambda_runtime",
  "serde",
