@@ -4,14 +4,14 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use tokio::{spawn, task::JoinHandle};
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Parameter {
     pub name: String,
     pub args: String,
     pub items: Vec<ParameterItem>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct ParameterItem {
     pub name: String,
     pub value: String,
